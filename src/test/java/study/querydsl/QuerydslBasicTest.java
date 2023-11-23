@@ -58,11 +58,38 @@ public class QuerydslBasicTest {
         assertThat(findMember.getUsername()).isEqualTo("member1");
     }
 
-    @Test void startQueryDsl() {
+    @Test
+    void startQueryDsl() {
         Member findMember = queryFactory
                 .select(member)
                 .from(member)
                 .where(member.username.eq("member1"))    // 파라미터 바인딩 처리
+                .fetchOne();
+
+        assert findMember != null;
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    public void search() {
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1")
+                        .and(member.age.eq(10)))
+                .fetchOne();
+
+        assert findMember != null;
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+    }
+
+    @Test
+    public void searchAndParam() {
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(
+                        member.username.eq("member1"),
+                        member.age.eq(10)
+                )
                 .fetchOne();
 
         assert findMember != null;
