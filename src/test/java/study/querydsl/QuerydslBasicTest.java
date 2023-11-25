@@ -4,7 +4,9 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -670,5 +672,45 @@ public class QuerydslBasicTest {
                 .selectFrom(member)
                 .where(builder)
                 .fetch();
+    }
+
+    @Test
+    public void dynamicQuery_WhereParam() {
+        String usernameParam = "member1";
+        Integer ageParam = null;
+
+        List<Member> result = searchMember2(usernameParam, ageParam);
+        assertThat(result.size()).isEqualTo(1);
+    }
+
+    /*
+     * where 조건에 null 값은 무시된다.
+     * 광고 상태 isValid, 날짜가 IN: isServicable 등 여러 조건을 조립해서 사용할 수 있고
+     * 다른 쿼리에서 재활용도 가능
+     * 쿼리 자체의 가독성이 높아짐
+     * !* null 체크는 주의해서 처리
+     * */
+    private List<Member> searchMember2(String usernameCond, Integer ageCond) {
+        return queryFactory
+                .selectFrom(member)
+//                .where(usernameEq(usernameCond), ageEq(ageCond))
+                .where(allEq(usernameCond, ageCond))
+                .fetch();
+    }
+
+    private BooleanExpression usernameEq(String usernameCond) {
+        return usernameCond != null
+                ? member.username.eq(usernameCond)
+                : null;
+    }
+
+    private BooleanExpression ageEq(Integer ageCond) {
+        return ageCond != null
+                ? member.age.eq(ageCond)
+                : null;
+    }
+
+    private BooleanExpression allEq(String usernameCond, Integer ageCond) {
+        return usernameEq(usernameCond).and(ageEq(ageCond));
     }
 }
