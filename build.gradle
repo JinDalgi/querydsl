@@ -45,7 +45,7 @@ jar {
 }
 
 // QueryDsl 빌드 옵션
-def querydslDir = "build/generated/querydsl"
+def querydslDir = "src/main/generated/querydsl"
 
 sourceSets {
     main.java.srcDirs += [ querydslDir ]
