@@ -123,6 +123,23 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom {
         return PageableExecutionUtils.getPage(content, pageable, countQuery::fetchCount);
     }
 
+    /*
+    * 스프링 데이터 정렬(Sort)
+    * 스프링 데이터 JPA는 자신의 정렬을 Querydsl의 정렬(OrderSprecifier)로 편리하게 변경하는 기능을 제공.
+    * 하지만 정렬은 조건이 조금만 복잡해져도 Pageable의 Sort 기능을 하용하기 어렵다.
+    * 루트 엔티티 범위를 넘어가는 동적 정렬 기능이 필요하면 스프링 데이터 페이징이 제공하는 Sort를 사용하기 보다는
+    * 파라미터를 받아서 직접 처리하는 것이 권장됨.
+    * */
+//    JPAQuery<Member> query = queryFactory.selectFrom(member);
+//
+//    for (Sort.Order o : pageable.getSort()) {
+//        PathBuilder pathBuilder = new
+//                PathBuilder(member.getType(), member.getMetadata());
+//        query.orderBy(new OrderSpecifier(o.isAscending() ?
+//                Order.ASC : Order.DESC, pathBuilder.get(o.getProperty())));
+//    }
+//    List<Member> result = query.fetch();
+
     private List<MemberTeamDto> getMemberTeamDtos(MemberSerachCondition condition, Pageable pageable) {
         List<MemberTeamDto> content = queryFactory
                 .select(new QMemberTeamDto(
